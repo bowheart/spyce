@@ -1,0 +1,147 @@
+sheath('app/Guest', ['core', 'pages/home', 'sass!app', 'sass!./guest'], (core, home) => {
+	
+})
+
+
+sheath.sass('app', ['core', 'animations', 'colors'], (core, animations, colors) => {
+	.app {
+		color: #333;
+		padding: core.boxPadding;
+	}
+})
+
+sheath.sass('app/guest', () => <<
+	<var guestNum = 2>
+	.guest<'-' + guestNum> {
+		ul {
+			list-style: none;
+			
+			<for (var i = 0; i < 10; i++) {<<
+				li:nth-child(<i>) {
+					height: 80px;
+					position: absolute;
+					top: <i * 80>px;
+				}
+			>>}>
+		}
+	}
+>>)
+
+
+sheath.sass('core', '__sass', sass => {
+	let swapRedGreen = color => {
+		color = sass.toColor(color)
+		var red = color.red
+		color.red = color.green
+		color.green = red
+		return color
+	}
+	
+	return {
+		swapRedGreen: swapRedGreen,
+		css: <<
+			body {
+				border: 1px solid [swapRedGreen('#72f')]
+				margin: 0;
+				
+				[Array.from(Array(11)).map((a, i) => <<
+					section:nth-of-type([i]) {
+						height: [i * 10]px;
+					}
+				>>)]
+			}
+		>>
+		
+		// Should compile to:
+		css: sheath.sassModule('body {border: 1px solid ' + swapRedGreen('#72f') + '; margin: 0; ' + Array.from(Array(11)).map((a, i) => 'section:nth-of-type(' + i + ') {height: ' + i + ' * 10px}') + '}')
+	}
+})
+
+
+
+
+
+
+
+
+// modules.js
+
+sheath('core', () => 'core')
+
+sheath('core/colors', () => {
+	return {
+		bg: '#f8',
+		text: '#333'
+	}
+})
+
+sheath.css('core', './colors', colors => <<
+	body {
+		color: [colors.text + <<333>>]
+	}
+>>)
+
+// should compile to:
+sheath.css.evaluate('body { color: ' + sheath.css.jsExpr(colors.text + '333') + ' }')
+'body { color: #333333 }'
+
+
+sheath('home', ['core', 'css!page'], core => 'home')
+
+sheath.css('page', 'core/colors', colors => <<
+	.page {
+		background: [colors.bg]
+	}
+>>)
+
+
+
+/*
+	transpile:
+		1) create lib/tmp/modules.js
+		
+		2) module map: {
+			'core': 'modules.js',
+			'core/colors': 'modules.js',
+			'css!core': 'modules.js',
+			'home': 'modules.js',
+			'css!page': 'modules.js'
+		}
+		
+		3) entry found: 'home'
+		4) entry dependencies:
+			home -> core
+			core -> css!core // automated dependency
+			css!core -> core/colors
+			home -> css!page
+			css!page -> core/colors
+		
+		for each entry, via sheath.forest() get the:
+		5) css modules: ['core/colors', 'css!core', 'css!page']
+		6) then map to their files: ['modules.js']
+		
+		7) load all css files, listening to sheath.css() calls and tracking module names and their factories
+		8) tell sheath-css to run all module factories in the order found in step 5
+		9) save results to a file: 'home.css'
+*/
+
+
+
+/*
+	sheath needs:
+		- module hooks. On module declared and on module defined. (Wait on this one...not sure it's needed)
+		- filename() -- tell sheath the filename where all to-be-declared modules are found (for automation).
+		- forest() -- add second argument for module type (e.g. 'css'). This will find the trees of all 'css!...' modules
+		- clear() -- wipe all sheath's data and start afresh.
+		- sheath.run('module') overload -- analyzeMode only! Tell sheath to run the factory for the specified module (will run all deps and deps of deps, etc)
+*/
+
+
+
+/*
+	spyce (over-react) -- the over-arching, opinionated framework that puts together an automated sheath configuration with webpack-style bundling,
+						  ycss/jsx/babel compilation, routing system, classes to extend, the works
+	Ybrid-css (ycss) -- the jsx-style syntax for css (<< snippet here and [jsStuff + 'here'] >>).
+	Sheath-css -- the sheath modifier and module. Provides sass-style nested selector syntax.
+	Sheath -- the module library. Enables spyce to put together webpack-style bundling.
+*/

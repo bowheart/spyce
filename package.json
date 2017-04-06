@@ -1,0 +1,41 @@
+{
+  "name": "spyce",
+  "version": "0.1.0",
+  "description": "A Mass-Modular Framework",
+  "main": "spyce.js",
+  "bin": {
+    "spyce": "bin/spyce.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bowheart/spyce.git"
+  },
+  "keywords": [
+    "express",
+    "framework",
+    "module",
+    "mvc"
+  ],
+  "author": "Joshua Claunch",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bowheart/spyce/issues"
+  },
+  "homepage": "https://github.com/bowheart/spyce#readme",
+  "dependencies": {
+    "babel-core": "^6.24.0",
+    "babel-plugin-transform-react-jsx": "^6.23.0",
+    "babel-preset-env": "^1.2.2",
+    "ejs": "^2.5.6",
+    "express": "^4.15.2",
+    "gulp-nodemon": "^2.2.1",
+    "rimraf": "^2.6.1",
+    "socket.io": "^1.7.3"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0"
+  }
+}
