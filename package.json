@@ -1,7 +1,7 @@
 {
   "name": "spyce",
   "version": "0.1.0",
-  "description": "A Mass-Modular Framework",
+  "description": "a mass-modular framework wrapper and integrator",
   "main": "spyce.js",
   "bin": {
     "spyce": "bin/spyce.js"
